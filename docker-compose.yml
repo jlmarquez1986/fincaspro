@@ -1,0 +1,71 @@
+# ── FincasPro — Docker Compose ────────────────────────────
+# Despliegue completo listo para usar:
+#   1. Backend FastAPI
+#   2. Frontend React (servido por Nginx)
+#   3. MailHog (servidor SMTP de desarrollo gratis)
+#
+# USO:
+#   docker-compose up --build
+#   Backend:  http://localhost:8000
+#   Frontend: http://localhost:5173
+#   MailHog:  http://localhost:8025 (ver emails enviados)
+# ──────────────────────────────────────────────────────────
+
+version: "3.8"
+
+services:
+  # ── Backend FastAPI ────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fincaspro-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - backend-uploads:/app/uploads
+    environment:
+      - DATABASE_URL=sqlite:///./fincaspro.db
+      - SMTP_HOST=mailhog
+      - SMTP_PORT=1025
+      - SMTP_USER=
+      - SMTP_PASS=
+      - SMTP_FROM=fincaspro@comunidad.local
+      - SMTP_TLS=false
+    depends_on:
+      - mailhog
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # ── Frontend React (Vite dev server) ───────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fincaspro-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+      - BACKEND_INTERNAL_URL=http://backend:8000
+    depends_on:
+      - backend
+    command: npm run dev -- --host 0.0.0.0
+
+  # ── MailHog (SMTP gratis para desarrollo) ──────────────
+  # Captura todos los emails enviados y los muestra en una
+  # interfaz web. No necesitas cuenta de email real.
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: fincaspro-mailhog
+    ports:
+      - "1025:1025"   # Puerto SMTP
+      - "8025:8025"   # Interfaz web para ver emails
+    environment:
+      - MH_STORAGE=memory
+
+volumes:
+  backend-uploads:

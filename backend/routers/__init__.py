@@ -1,0 +1,14 @@
+from . import administrador as administrador
+from . import auth as auth
+from . import avisos as avisos
+from . import delegacion_voto as delegacion_voto
+from . import estado_cuenta as estado_cuenta
+from . import llaves as llaves
+from . import paqueteria as paqueteria
+from . import piscina as piscina
+from . import portal as portal
+from . import quejas_mejoras as quejas_mejoras
+from . import telefonos_interes as telefonos_interes
+from . import tickets as tickets
+from . import usuarios as usuarios
+from . import vecinos as vecinos

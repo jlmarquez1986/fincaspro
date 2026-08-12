@@ -1,0 +1,56 @@
+# FincasPro — producción
+# Ejecutar con:
+#   docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fincaspro-backend-prod
+    restart: unless-stopped
+    environment:
+      ENVIRONMENT: production
+      COMMUNITY_NAME: ${COMMUNITY_NAME:-Comunidad}
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY es obligatorio}
+      DATABASE_URL: ${DATABASE_URL:-sqlite:////data/fincaspro.db}
+      APP_TIMEZONE: ${APP_TIMEZONE:-Europe/Madrid}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-480}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_TLS: ${SMTP_TLS:-true}
+      MIGRATE_ON_STARTUP: ${MIGRATE_ON_STARTUP:-true}
+      UVICORN_WORKERS: ${UVICORN_WORKERS:-1}
+    volumes:
+      - fincaspro_db:/data
+      - fincaspro_uploads:/app/uploads
+    expose:
+      - "8000"
+    networks:
+      - fincaspro
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fincaspro-frontend-prod
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    networks:
+      - fincaspro
+
+volumes:
+  fincaspro_db:
+  fincaspro_uploads:
+
+networks:
+  fincaspro:
+    driver: bridge

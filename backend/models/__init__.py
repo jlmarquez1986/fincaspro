@@ -1,0 +1,16 @@
+from .administrador import Administrador as Administrador
+from .aviso import Aviso as Aviso
+from .carnet_piscina import CarnetPiscina as CarnetPiscina
+from .configuracion import Configuracion as Configuracion
+from .delegacion_voto import DelegacionVoto as DelegacionVoto
+from .estado_cuenta import EstadoCuenta as EstadoCuenta
+from .invitacion_piscina import InvitacionPiscina as InvitacionPiscina
+from .llave import Llave as Llave
+from .paquete import Paquete as Paquete
+from .queja_mejora import QuejaMejora as QuejaMejora
+from .registro_piscina import RegistroPiscina as RegistroPiscina
+from .telefono_interes import TelefonoInteres as TelefonoInteres
+from .ticket import Comentario as Comentario
+from .ticket import Ticket as Ticket
+from .usuario import Usuario as Usuario
+from .vecino import Vecino as Vecino

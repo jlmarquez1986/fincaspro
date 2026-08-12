@@ -1,0 +1,17 @@
+-r requirements.txt
+
+# Testing
+pytest==8.3.4
+pytest-asyncio
+pytest-cov
+httpx==0.28.1
+
+# Calidad de código
+ruff
+black
+pyright
+
+# Tipado
+mypy
+
+alembic==1.16.1
