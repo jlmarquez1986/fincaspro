@@ -1,10 +1,27 @@
 [tool.black]
 line-length = 100
-target-version = ["py313"]
+target-version = ["py312"]
+
+
+# ------------------------------------------------------------------
+# Ruff — Linter y formateador
+# ------------------------------------------------------------------
 
 [tool.ruff]
 line-length = 100
-target-version = "py313"
+target-version = "py312"
+
+# Hace que las exclusiones se respeten incluso cuando se pasan
+# rutas explícitas a Ruff.
+force-exclude = true
+
+# Migraciones autogeneradas por Alembic.
+# No se modifican para satisfacer el linter porque forman parte
+# del historial de cambios de la base de datos.
+exclude = [
+    "backend/alembic/versions",
+]
+
 
 [tool.ruff.lint]
 select = [
@@ -12,7 +29,7 @@ select = [
     "F",
     "I",
     "UP",
-    "B"
+    "B",
 ]
 
 ignore = [
@@ -20,18 +37,20 @@ ignore = [
     "B904",
 ]
 
-exclude = [
-    "backend/alembic/versions",
-]
 
 [tool.ruff.lint.per-file-ignores]
-# Los imports van tras os.environ.setdefault(...) a propósito: los módulos de
-# la app leen variables de entorno al importarse (SECRET_KEY, etc.).
+
+# Los imports van después de os.environ.setdefault(...) a propósito:
+# los módulos de la aplicación leen variables de entorno al importarse
+# (SECRET_KEY, etc.).
+
 "backend/tests/conftest.py" = ["E402"]
+
 
 # ------------------------------------------------------------------
 # MyPy — Configuración profesional para SQLAlchemy 2.0
 # ------------------------------------------------------------------
+
 [tool.mypy]
 python_version = "3.13"
 mypy_path = "backend"
@@ -41,10 +60,12 @@ ignore_missing_imports = true
 
 check_untyped_defs = true
 strict_optional = true
+
 warn_return_any = true
 warn_redundant_casts = true
 warn_unused_ignores = true
 warn_unused_configs = true
+
 show_error_codes = true
 show_column_numbers = true
 
@@ -57,90 +78,116 @@ exclude = [
     "^\\.venv/",
 ]
 
+
 [[tool.mypy.overrides]]
 module = "jose.*"
 ignore_missing_imports = true
+
 
 [[tool.mypy.overrides]]
 module = "bcrypt"
 ignore_missing_imports = true
 
+
 [[tool.mypy.overrides]]
 module = "slowapi.*"
 ignore_missing_imports = true
+
 
 [[tool.mypy.overrides]]
 module = "aiosmtplib"
 ignore_missing_imports = true
 
+
 # ------------------------------------------------------------------
 # Pyright — Configuración para Pylance / VS Code
 # ------------------------------------------------------------------
-# Pyright es el motor de análisis estático que usa VS Code (Pylance).
-# Aunque MyPy pase limpio, Pyright tiene reglas distintas.
-# ------------------------------------------------------------------
+
+# Pyright es el motor de análisis estático utilizado por VS Code
+# mediante Pylance.
+
 [tool.pyright]
+
 # Versión de Python objetivo
 pythonVersion = "3.13"
 
-# Modo de chequeo: "standard" es un buen equilibrio.
-# Opciones: "off" | "basic" | "standard" | "strict"
+# Nivel de comprobación:
+# off | basic | standard | strict
 typeCheckingMode = "standard"
 
-# Rutas adicionales para resolver imports (equivalente a mypy_path)
-# Esto permite que "from security import ..." se resuelva desde backend/
-extraPaths = ["backend"]
+# Permite resolver imports desde backend/
+extraPaths = [
+    "backend",
+]
 
-# Incluir solo la carpeta backend
-include = ["backend"]
+# Analizar únicamente el backend
+include = [
+    "backend",
+]
 
-# Excluir código generado, tests y entornos virtuales
+# Excluir código generado, tests y directorios que no necesitan
+# análisis estático.
 exclude = [
     "**/alembic",
     "**/tests",
     "**/venv",
     "**/.venv",
+    "**/node_modules",
+    "**/__pycache__",
+    "**/.git",
+    "**/.*",
 ]
 
-# No reportar imports faltantes de librerías sin stubs.
-# Esto evita que Pyright se queje de bcrypt, jose, slowapi, etc.
+# No considerar como error los imports de librerías que no disponen
+# de stubs completos.
 reportMissingImports = "warning"
 
-# Desactivar reglas demasiado estrictas para un proyecto en evolución.
-# Se pueden activar progresivamente.
+# Reglas de tipado que se irán endureciendo progresivamente.
 reportUnknownParameterType = false
 reportUnknownArgumentType = false
 reportUnknownVariableType = false
 reportUnknownMemberType = false
 reportMissingTypeStubs = false
 
+
 # ------------------------------------------------------------------
-# pytest
+# Pytest
 # ------------------------------------------------------------------
+
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+
+testpaths = [
+    "tests",
+]
 
 python_files = [
-    "test_*.py"
+    "test_*.py",
 ]
 
 addopts = [
     "-ra",
     "--strict-markers",
-    "--strict-config"
+    "--strict-config",
 ]
 
+
 # ------------------------------------------------------------------
-# coverage
+# Coverage
 # ------------------------------------------------------------------
+
 [tool.coverage.run]
-source = ["backend"]
+
+source = [
+    "backend",
+]
 
 omit = [
     "*/tests/*",
-    "*/alembic/*"
+    "*/alembic/*",
 ]
 
+
 [tool.coverage.report]
+
 show_missing = true
 skip_covered = false
