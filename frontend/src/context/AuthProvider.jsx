@@ -1,16 +1,28 @@
-import { createContext, useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
+import { AuthContext } from "./AuthContext";
 import { api } from "../api/client";
-
-const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("user")); } catch { return null; }
+    try {
+      return JSON.parse(localStorage.getItem("user"));
+    } catch {
+      return null;
+    }
   });
+
   const [vecino, setVecino] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("vecino")); } catch { return null; }
+    try {
+      return JSON.parse(localStorage.getItem("vecino"));
+    } catch {
+      return null;
+    }
   });
-  const [config, setConfig] = useState({ community_name: "Comunidad" });
+
+  const [config, setConfig] = useState({
+    community_name: "Comunidad",
+  });
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -48,11 +60,9 @@ export function AuthProvider({ children }) {
     isVecino: !!vecino,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth debe usarse dentro de AuthProvider");
-  return context;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 }

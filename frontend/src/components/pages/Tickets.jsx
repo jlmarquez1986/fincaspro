@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { api } from "../../api/client";
-import { Badge, fmtDate } from "../../utils/helpers";
+import { Badge } from "../../utils/helpers";
+import { fmtDate } from "../../utils/date";
 
 export default function Tickets() {
   const [allItems, setAllItems] = useState([]); // Todos los tickets (sin filtrar)
@@ -23,22 +24,14 @@ export default function Tickets() {
   const [err, setErr] = useState("");
 
   // Cargar todos los tickets y vecinos
-  const loadAll = () => {
-    api.tickets.list().then((data) => {
-      setAllItems(data);
-      // Aplicar filtro actual si existe
-      if (filter) {
-        setItems(data.filter((t) => t.estado === filter));
-      } else {
-        setItems(data);
-      }
-    });
-    api.vecinos.list().then(setVecinos);
-  };
+  const loadAll = useCallback(() => {
+  api.tickets.list().then(setAllItems);
+  api.vecinos.list().then(setVecinos);
+}, []);
 
   useEffect(() => {
-    loadAll();
-  }, []); // Solo al montar
+  loadAll();
+}, [loadAll]); // Solo al montar
 
   // Cuando cambia el filtro, filtrar sobre allItems
   useEffect(() => {
@@ -475,3 +468,4 @@ export default function Tickets() {
     </div>
   );
 }
+

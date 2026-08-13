@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { api } from "../../api/client";
-import { Badge, fmtDate } from "../../utils/helpers";
+import { Badge } from "../../utils/helpers";
+import { fmtDate } from "../../utils/date";
 
 export default function Llaves() {
   const [items, setItems] = useState([]);
@@ -277,3 +278,4 @@ export default function Llaves() {
     </div>
   );
 }
+

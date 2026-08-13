@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { api } from "../../api/client";
-import { fmtDate } from "../../utils/helpers";
+import { fmtDate } from "../../utils/date";
 
 export default function Piscina() {
   const [carnets, setCarnets] = useState([]);

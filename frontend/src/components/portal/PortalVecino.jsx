@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { api } from "../../api/client";
-import { Badge, fmtDate } from "../../utils/helpers";
+import { Badge } from "../../utils/helpers";
+import { fmtDate } from "../../utils/date";
 
 const BORDER = { info: "#2563eb", aviso: "#f59e0b", urgente: "#ef4444" };
 
@@ -299,3 +300,4 @@ export default function PortalVecino({ onLogout }) {
     </div>
   );
 }
+

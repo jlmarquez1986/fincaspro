@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { api } from "../../api/client";
-import { Badge, fmtDate } from "../../utils/helpers";
+import { Badge } from "../../utils/helpers";
+import { fmtDate } from "../../utils/date";
 
 export default function QuejasMejoras() {
   const [items, setItems] = useState([]);
@@ -11,12 +12,15 @@ export default function QuejasMejoras() {
   const [err, setErr] = useState("");
   const [enviando, setEnviando] = useState(false);
 
-  const load = () => {
+  const load = useCallback(() => {
     const params = filter ? `?estado=${filter}` : "";
     api.quejasMejoras.list(params).then(setItems).catch(() => {});
     api.vecinos.list().then(setVecinos).catch(() => {});
-  };
-  useEffect(() => { load(); }, [filter]);
+  }, [filter]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const create = async () => {
     setErr("");
@@ -173,3 +177,4 @@ export default function QuejasMejoras() {
     </div>
   );
 }
+
