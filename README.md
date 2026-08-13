@@ -8,7 +8,7 @@ Sistema de gestión de fincas y conserjería para comunidades de vecinos — pan
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-> **Estado actual (agosto de 2026):** desarrollo avanzado y preparación para producción. El backend tiene **109 tests pasando** y **87,56 % de cobertura**; el CI valida backend y frontend automáticamente.
+> **Estado actual (agosto de 2026):** desarrollo avanzado y preparación para producción. El backend tiene **109 tests pasando** y **87,56 % de cobertura**; el CI valida backend, frontend y la build de Docker de producción automáticamente en cada push, con subida de cobertura a Codecov confirmada y funcionando.
 
 > Reemplaza `TU_USUARIO` en el badge de arriba por tu usuario/organización de GitHub una vez subas el repo.
 
@@ -120,7 +120,7 @@ La configuración de Ruff, MyPy, Pyright, pytest y coverage está centralizada e
 
 `.gitattributes` fuerza la normalización de finales de línea a LF para evitar diferencias entre Windows, Linux y GitHub Actions.
 
-> **Codecov:** la subida de cobertura es opcional. Si `CODECOV_TOKEN` no está configurado, el workflow no falla por este paso (`fail_ci_if_error: false`).
+> **Codecov:** la subida de cobertura es opcional (si `CODECOV_TOKEN` no está configurado, el workflow no falla por este paso gracias a `fail_ci_if_error: false`), pero ya está configurada y verificada: el log del CI confirma la subida correcta del reporte a `app.codecov.io`.
 
 ## Cómo ejecutarlo
 
@@ -212,25 +212,31 @@ Los tests corren contra una base de datos SQLite en memoria, completamente aisla
 - [**REQUIREMENTS.md**](./REQUIREMENTS.md) — documento completo de arquitectura, requisitos funcionales/no funcionales, modelo de datos, API, flujos del sistema y guía para desarrolladores.
 - [Configuración de email (MailHog, Brevo, SendGrid...) y comandos de Docker](./docs/EMAIL_Y_DESPLIEGUE.md)
 
+## Registro de cambios recientes
+
+- **13 ago 2026** — Confirmado en el log de GitHub Actions que la subida de cobertura a Codecov funciona correctamente con `CODECOV_TOKEN` configurado (firma GPG verificada, reporte subido a `app.codecov.io`). Refactorización del frontend: `AuthContext.jsx` se dividió en `context/AuthContext.js` (contexto) y `context/AuthProvider.jsx` (proveedor), y se añadió `utils/date.js`. Actualización de dependencias del frontend: `npm audit fix` + subida manual de `react-router-dom` a `7.18.2`, resolviendo 6 de las 8 vulnerabilidades detectadas. Quedan 2 (moderada/alta) ligadas a `esbuild`/`vite ≤6.4.2`, que solo se resuelven saltando a Vite 8 — de momento bloqueado por un conflicto de peer dependencies con `@vitejs/plugin-react@6` y pospuesto a una sesión propia.
+- **12 ago 2026 — Paso 8 del roadmap (CI/CD con GitHub Actions)** completado: se corrigió un bug de ruta al instalar `requirements` en `ci.yml`, se añadió el job de frontend (lint + build) que faltaba, se normalizaron los finales de línea CRLF→LF con `.gitattributes`, se arreglaron 2 errores reales de MyPy en `security.py`, se eliminó un `pyrightconfig.json` que pisaba la configuración de `pyproject.toml`, se instaló y configuró ESLint en el frontend (existía el script pero no la dependencia) corrigiendo 7 errores reales, y se añadieron `pytest-asyncio` y `pyright` a `requirements-dev.txt`.
+
 ## Próximos pasos (roadmap)
 
 ### Preparación para producción
-- [ ] Docker de producción separado del entorno de desarrollo
-- [ ] Build multi-stage del frontend y servidor estático con Nginx
-- [ ] Healthchecks y configuración de servicios
-- [ ] Revisión de persistencia de base de datos y archivos subidos
-- [ ] CORS y variables de entorno específicas de producción
-- [ ] HTTPS / reverse proxy
-- [ ] Revisión final de secretos y configuración de despliegue
+- [x] Docker de producción separado del entorno de desarrollo (`docker-compose.prod.yml`)
+- [x] Build multi-stage del frontend y servidor estático con Nginx
+- [x] Healthchecks y configuración de servicios
+- [x] Revisión de persistencia de base de datos y archivos subidos (volúmenes)
+- [x] CORS y variables de entorno específicas de producción (`.env.production.example`)
+- [ ] HTTPS / reverse proxy — pendiente añadir una capa TLS delante de Nginx antes de publicar en Internet
+- [ ] Revisión final de secretos y configuración de despliegue en el hosting real
 
 ### Evolución funcional y técnica
-- [ ] Migrar de SQLite a PostgreSQL + Alembic para migraciones versionadas
+- [ ] Migrar de SQLite a PostgreSQL (Alembic ya gestiona el esquema, migración de motor pendiente)
 - [ ] Sistema de permisos por acción en lugar de roles fijos
 - [ ] Pantalla de administración para crear cuentas de staff
 - [ ] Registro de auditoría de acciones
 - [ ] Rate limiting y bloqueo tras varios intentos de login fallidos
 - [ ] Multi-comunidad
 - [ ] Paginación en listados de la API
+- [ ] Migrar frontend a Vite 8 (bloqueado por conflicto de peer dependencies con `@vitejs/plugin-react@6`; hasta entonces quedan 2 vulnerabilidades moderadas/altas en `esbuild`/`vite` que solo afectan al servidor de desarrollo, no a producción)
 
 ## Licencia
 
